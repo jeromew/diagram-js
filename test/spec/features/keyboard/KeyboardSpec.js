@@ -221,7 +221,7 @@ describe('features/keyboard', function() {
 
     });
 
-    describe('arrow keys', function(){
+    describe.only('arrow keys', function(){
 
       it('should handle left arrow', inject(function(canvas, keyboard) {
 
@@ -326,6 +326,72 @@ describe('features/keyboard', function() {
           // then
           expect(canvas.viewbox().x).to.eql(0);
           expect(canvas.viewbox().y).to.eql(-5);
+        }));
+
+      });
+
+
+      describe("element movement", function() {
+
+        var shape1, shape2, connection1;
+
+        beforeEach(inject(function(canvas) {
+
+          // given
+          shape1 = canvas.addShape({
+            id: 'shape1',
+            x: 10,
+            y: 10,
+            width: 100,
+            height: 100
+          });
+
+          shape2 = canvas.addShape({
+            id: 'shape2',
+            x: 150,
+            y: 10,
+            width: 100,
+            height: 100
+          });
+
+          connection1 = canvas.addConnection({
+            id: 'connection1',
+            waypoints: [ { x: 110, y: 60 }, {x: 150, y: 60} ],
+            source: shape1,
+            target: shape2
+          });
+        }));
+
+
+        it("should not move canvas when elements are selected",
+        inject(function(canvas, keyboard, selection) {
+          // given
+          var e = createKeyEvent(container, 40, true);
+          selection.select(shape1);
+
+          // when
+          keyboard._keyHandler(e);
+
+          // then
+          expect(canvas.viewbox().x).to.eql(0);
+          expect(canvas.viewbox().y).to.eql(0);
+        }));
+
+
+        it("should move selected element down",
+        inject(function(keyboard, selection) {
+          // given
+          var e = createKeyEvent(container, 40, true),
+              expectedX = shape1.x,
+              expectedY = shape1.y + 5;
+          selection.select(shape1);
+
+          // when
+          keyboard._keyHandler(e);
+
+          // then
+          expect(shape1.x).to.eql(expectedX);
+          expect(shape1.y).to.eql(expectedY);
         }));
 
       });
