@@ -43,6 +43,7 @@ describe('util/Elements', function() {
     ]
   };
 
+
   function ids(array) {
     return array.map(function(e) {
       return e.id;
@@ -216,6 +217,73 @@ describe('util/Elements', function() {
         height: 15,
         width:  20
       });
+
     });
+
   });
+
+  describe('#getTopLevel', function () {
+
+    var sB = { id: 'b', parent: { id: 'a' } },
+        sC = { id: 'c', parent: { id: 'a' } },
+        sE = { id: 'e', parent: { id: 'a' } },
+        sD = { id: 'd', parent: { id: 'b' } },
+        sF = { id: 'f', parent: { id: 'e' } },
+        sG = { id: 'g', parent: { id: 'f' } },
+        sX = { id: 'x', parent: { id: 'y' } };
+
+
+    it('should only get the top level', function() {
+      // when
+      var topLevel = Elements.getTopLevel([ sB, sC, sE, sD, sG, sF, sX ]);
+
+      // then
+      expect(topLevel).to.contain(sB, sC, sE, sX);
+      expect(topLevel.length).to.equal(4);
+    });
+
+  });
+
+  describe('#createTree', function () {
+    var sB = { id: 'b', parent: { id: 'a' }},
+        sC = { id: 'c', parent: sB },
+        sD = { id: 'd', parent: sB },
+        sE = { id: 'e', parent: { id: 'y' } },
+        sF = { id: 'f', parent: sE },
+        sG = { id: 'g', parent: sF };
+
+    var cA = { id: 'connection', parent: sB, source: sC, target: sD };
+
+    sB.children = [ sC, sD];
+    sF.children = [ sG ];
+    sE.children = [ sF ];
+
+    sC.outgoing = cA;
+    sD.incoming = cA;
+
+    it('should create tree of shapes', function() {
+      // when
+      var tree = Elements.createTree([ sB, sC, sD, sE, sF, sG ]);
+
+      // then
+      expect(tree[0]).to.have.keys('b', 'e');
+      expect(tree[1]).to.have.keys('c', 'd', 'f');
+      expect(tree[2]).to.have.keys('g');
+    });
+
+    it('should create a complete tree of shapes and connections', function() {
+      // when
+      var tree = Elements.createTree([ sB, sC, sD, sE, sF, sG, cA ]);
+
+      // then
+      expect(tree[0]).to.have.keys('b', 'e');
+      expect(tree[1]).to.have.keys('c', 'd', 'f', 'connection');
+      expect(tree[2]).to.have.keys('g');
+
+      expect(tree[1].connection.source).to.equal('c');
+      expect(tree[1].connection.target).to.equal('d');
+    });
+
+  });
+
 });
