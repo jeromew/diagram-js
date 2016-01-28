@@ -47,7 +47,7 @@ describe('features/keyboard', function() {
 
     it('should bind keyboard events to node', inject(function(keyboard) {
       // Actually three listeners are set
-      var STANDARD_LISTENER_COUNT = 1;
+      var STANDARD_LISTENER_COUNT = 2;
 
       keyboard.bind(testDiv);
 
@@ -101,7 +101,7 @@ describe('features/keyboard', function() {
         var e = createKeyEvent(container, 107, true);
 
         // when
-        keyboard._keyHandler(e);
+        keyboard._keydownHandler(e);
 
         // then
         expect(canvas.zoom()).to.be.above(1);
@@ -114,7 +114,7 @@ describe('features/keyboard', function() {
         var e = createKeyEvent(container, 187, true);
 
         // when
-        keyboard._keyHandler(e);
+        keyboard._keydownHandler(e);
 
         // then
         expect(canvas.zoom()).to.be.above(1);
@@ -127,7 +127,7 @@ describe('features/keyboard', function() {
         var e = createKeyEvent(container, 61, true);
 
         // when
-        keyboard._keyHandler(e);
+        keyboard._keydownHandler(e);
 
         // then
         expect(canvas.zoom()).to.be.above(1);
@@ -140,7 +140,7 @@ describe('features/keyboard', function() {
         var e = createKeyEvent(container, 171, true);
 
         // when
-        keyboard._keyHandler(e);
+        keyboard._keydownHandler(e);
 
         // then
         expect(canvas.zoom()).to.be.above(1);
@@ -157,7 +157,7 @@ describe('features/keyboard', function() {
         var e = createKeyEvent(container, 109, true);
 
         // when
-        keyboard._keyHandler(e);
+        keyboard._keydownHandler(e);
 
         // then
         expect(canvas.zoom()).to.be.below(1);
@@ -170,7 +170,7 @@ describe('features/keyboard', function() {
         var e = createKeyEvent(container, 189, true);
 
         // when
-        keyboard._keyHandler(e);
+        keyboard._keydownHandler(e);
 
         // then
         expect(canvas.zoom()).to.be.below(1);
@@ -183,7 +183,7 @@ describe('features/keyboard', function() {
         var e = createKeyEvent(container, 173, true);
 
         // when
-        keyboard._keyHandler(e);
+        keyboard._keydownHandler(e);
 
         // then
         expect(canvas.zoom()).to.be.below(1);
@@ -201,7 +201,7 @@ describe('features/keyboard', function() {
         var e = createKeyEvent(container, 96, true);
 
         // when
-        keyboard._keyHandler(e);
+        keyboard._keydownHandler(e);
 
         // then
         expect(canvas.zoom()).to.equal(1);
@@ -215,7 +215,7 @@ describe('features/keyboard', function() {
         var e = createKeyEvent(container, 48, true);
 
         // when
-        keyboard._keyHandler(e);
+        keyboard._keydownHandler(e);
 
         // then
         expect(canvas.zoom()).to.equal(1);
@@ -232,7 +232,7 @@ describe('features/keyboard', function() {
         var e = createKeyEvent(container, 37, true);
 
         // when
-        keyboard._keyHandler(e);
+        keyboard._keydownHandler(e);
 
         // then
         expect(canvas.viewbox().x).to.eql(-5);
@@ -246,7 +246,7 @@ describe('features/keyboard', function() {
         var e = createKeyEvent(container, 39, true);
 
         // when
-        keyboard._keyHandler(e);
+        keyboard._keydownHandler(e);
 
         // then
         expect(canvas.viewbox().x).to.eql(5);
@@ -260,7 +260,7 @@ describe('features/keyboard', function() {
         var e = createKeyEvent(container, 38, true);
 
         // when
-        keyboard._keyHandler(e);
+        keyboard._keydownHandler(e);
 
         // then
         expect(canvas.viewbox().x).to.eql(0);
@@ -274,7 +274,7 @@ describe('features/keyboard', function() {
         var e = createKeyEvent(container, 40, true);
 
         // when
-        keyboard._keyHandler(e);
+        keyboard._keydownHandler(e);
 
         // then
         expect(canvas.viewbox().x).to.eql(0);
@@ -294,7 +294,7 @@ describe('features/keyboard', function() {
 
           // when
           keyboardConfig.speed = 23; // plenty of fuel needed
-          keyboard._keyHandler(keyDownEvent);
+          keyboard._keydownHandler(keyDownEvent);
 
           // then
           expect(canvas.viewbox().x).to.eql(0);
@@ -313,7 +313,7 @@ describe('features/keyboard', function() {
 
           // when
           keyboardConfig.invertY = true;
-          keyboard._keyHandler(keyDownEvent);
+          keyboard._keydownHandler(keyDownEvent);
 
           // then
           expect(canvas.viewbox().x).to.eql(0);
@@ -323,7 +323,7 @@ describe('features/keyboard', function() {
           // but does up work, too?
 
           // when
-          keyboard._keyHandler(keyUpEvent);
+          keyboard._keydownHandler(keyUpEvent);
 
           // then
           expect(canvas.viewbox().x).to.eql(0);

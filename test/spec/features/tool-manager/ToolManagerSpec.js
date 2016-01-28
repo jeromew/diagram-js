@@ -3,18 +3,24 @@
 require('../../../TestHelper');
 
 var canvasEvent = require('../../../util/MockEvents').createCanvasEvent;
+var createKeyEvent = require('../../../util/KeyEvents').createKeyEvent;
+
+var TestContainer = require('mocha-test-container-support');
 
 /* global bootstrapDiagram, inject */
 
 
 var toolManagerModule = require('../../../../lib/features/tool-manager'),
     handToolModule = require('../../../../lib/features/hand-tool'),
+    keyboardModule = require('../../../../lib/features/keyboard'),
     draggingModule = require('../../../../lib/features/dragging');
+
+var Cursor = require('../../../../lib/util/Cursor');
 
 
 describe('features/tool-manager', function() {
 
-  beforeEach(bootstrapDiagram({ modules: [ toolManagerModule, handToolModule, draggingModule ] }));
+  beforeEach(bootstrapDiagram({ modules: [ toolManagerModule, keyboardModule, handToolModule, draggingModule ] }));
 
   beforeEach(inject(function(dragging) {
     dragging.setOptions({ manual: true });
@@ -37,7 +43,7 @@ describe('features/tool-manager', function() {
     it('should throw error when registering a tool without events', inject(function(toolManager) {
       // when
       function result() {
-        toolManager.registerTool('hand');
+        toolManager.registerTool('hand', { tool: 'foo' });
       }
 
       // then
@@ -60,6 +66,56 @@ describe('features/tool-manager', function() {
       dragging.end();
 
       expect(toolManager.isActive('hand')).to.be.false;
+    }));
+
+  });
+
+
+  describe('cursor', function () {
+
+    var container;
+
+    beforeEach(function() {
+      container = TestContainer.get(this);
+
+      Cursor.unset();
+    });
+
+    it('should register with cursor', inject(function(toolManager) {
+      // when
+      toolManager.registerTool('lasso', {
+        tool: 'lasso.selection',
+        dragging: 'lasso',
+        cursor: 'crosshair',
+        handler: function(event) {
+          return true;
+        }
+      });
+
+      expect(toolManager._cursors.lasso).to.exist;
+    }));
+
+
+    it('should add cursor', inject(function(keyboard, toolManager) {
+      // when
+      var e = createKeyEvent(container, 17, true);
+
+      keyboard._keydownHandler(e);
+
+      expect(Cursor.has('grab')).to.be.true;
+    }));
+
+
+    it('should remove cursor', inject(function(keyboard, toolManager) {
+      // when
+      var keydown = createKeyEvent(container, 17, true),
+          keyup = createKeyEvent(container, 17, false);
+
+      keyboard._keydownHandler(keydown);
+
+      keyboard._keyupHandler(keyup);
+
+      expect(Cursor.has('grab')).to.be.false;
     }));
 
   });
